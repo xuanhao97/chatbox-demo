@@ -3,6 +3,8 @@ import MessageItem from "./message-item";
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { MoveDown } from "lucide-react";
 
 export interface MessageListProps {
   messages: Message[];
@@ -78,43 +80,63 @@ function MessageList({ messages, setMessages, scrollRef }: MessageListProps) {
     },
     [fetchData, hasMore]
   );
+  const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
+
+  const isShowScrollDownButton = lastItem && lastItem.index !== count - 1;
 
   return (
-    <div className="h-full overflow-auto" ref={parentRef}>
-      <div
-        style={{
-          height: virtualizer.getTotalSize(),
-          width: "100%",
-          position: "relative",
-        }}
-      >
-        <div id="top" ref={topRef} />
+    <div className="h-full">
+      <div className="h-full overflow-auto" ref={parentRef}>
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
+            height: virtualizer.getTotalSize(),
             width: "100%",
-            transform: `translateY(${items[0]?.start ?? 0}px)`,
+            position: "relative",
           }}
         >
-          {items.map((virtualRow) => {
-            const message = messages[virtualRow.index];
-            const lastMessage = messages[virtualRow.index - 1];
-            if (!message) return null;
-            return (
-              <div
-                key={virtualRow.key}
-                data-index={virtualRow.index}
-                ref={virtualizer.measureElement}
-                className={cn("py-4 px-4", lastMessage && "pb-2")}
-              >
-                <MessageItem message={message} />
-              </div>
-            );
-          })}
+          <div id="top" ref={topRef} />
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              transform: `translateY(${items[0]?.start ?? 0}px)`,
+            }}
+          >
+            {items.map((virtualRow) => {
+              const message = messages[virtualRow.index];
+              const lastMessage = messages[virtualRow.index - 1];
+              if (!message) return null;
+              return (
+                <div
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  className={cn("py-4 px-4", lastMessage && "pb-2")}
+                >
+                  <MessageItem message={message} />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
+      <Button
+        size={"icon"}
+        className={cn(
+          "rounded-full size-8 absolute bottom-2 left-1/2 z-10",
+          isShowScrollDownButton ? "visible" : "invisible"
+        )}
+        onClick={() => {
+          virtualizer.scrollToIndex(count - 1, {
+            align: "end",
+            behavior: "smooth",
+          });
+        }}
+      >
+        <MoveDown className="size-4" />
+      </Button>
     </div>
   );
 }
