@@ -85,7 +85,7 @@ function MessageList({ messages, setMessages, scrollRef }: MessageListProps) {
   const isShowScrollDownButton = lastItem && lastItem.index !== count - 1;
 
   return (
-    <div className="h-full flex flex-col overflow-auto">
+    <div className="h-full">
       <div className="h-full overflow-auto" ref={parentRef}>
         <div
           style={{
