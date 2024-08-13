@@ -27,7 +27,7 @@ export default function ChatBox() {
   });
 
   return (
-    <div className="relative flex w-[400px] max-h-[600px] flex-col rounded-xl bg-muted/50">
+    <div className="relative overflow-y-auto p-1 flex w-[400px] h-[500px] flex-col rounded-xl bg-muted/50">
       <MessageList
         scrollRef={scrollRef}
         messages={messages}
